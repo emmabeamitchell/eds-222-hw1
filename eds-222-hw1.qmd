@@ -1,8 +1,16 @@
 ---
 title: "EDS 222: Homework 1"
-date: "Assigned ???, due ???"
-author: "Your Name Here"
+date: "Assigned 09/26, due 10/14"
+author: "Emma Bea Mitchell"
+editor_options: 
+  chunk_output_type: console
 ---
+```{r}
+library(tidyverse)
+library(dplyr)
+```
+
+
 
 ## Background
 
@@ -33,12 +41,45 @@ crowdsourced <- readRDS(file.path("data", "airpol-PK-crowdsourced.RDS"))
 govt <- readRDS(file.path("data", "airpol-PK-govt.RDS"))
 ```
 
+```{r}
+crowdsourced <- readRDS(file.path("data", "airpol-PK-crowdsourced.RDS"))
+govt <- readRDS(file.path("data", "airpol-PK-govt.RDS"))
+```
+
 ::: callout-warning
 There's an implicit assumption about file organization in the code above. What is it? How can you make the code work?
 :::
 
+**It makes the assumption that you have a folder in your repository called data. I made this work easily by just creating that folder and putting my data in it**
+
 1.  These dataframes have one row per pollution observation. How many pollution records are in each dataset?
+
+```{r}
+nrow(crowdsourced)
+nrow(govt)
+```
+
+**The crowdsourced dataframe has 5488 pollution observations. The govt dataframe has 1960 pollution observations**
+
+
 2.  Each monitor is located at a unique latitude and longitude location. How many unique monitors are in each dataset?
+
+```{r}
+
+unique_crowd <- crowdsourced |>
+  mutate(group_id = cur_group_id(),
+         .by = longitude, latitude)
+print(n_distinct(unique_crowd$group_id))
+
+unique_govt <- govt |>
+  mutate(group_id = cur_group_id(),
+         .by = latitude,longitude)
+print(n_distinct(unique_govt$group_id))
+
+
+```
+
+**There are 14 unique latitude and longitude locations in crowdsourced dataset. There are 4 unique latitude and longitude locations in govt dataset**
 
 ::: callout-tip
 `group_by(longitude,latitude)` and `cur_group_id()` in `dplyr` will help in creating a unique identifier for each (longitude, latitude) pair.
@@ -50,9 +91,15 @@ The goal of pollution monitoring in Lahore is to measure the average pollution c
 
 1.  What is the *population* in this setting? Please be precise.
 
+**in the crowdsourced dataset the population is Lahore's air quality in the entire city ** ? how to show this in code?
+
 2.  What are the *samples* in this setting? Please be precise.
 
+**the samples are the voluntary samples that were taken from homes in Lahore** show this in code??
+
 3.  These samples were not randomly collected from across locations in Lahore. Given the sampling approaches described above, discuss possible biases that may enter when we use these samples to construct estimates of population parameters.
+
+**list actual sample bias names!! people who have worse air quality will be more likely to get samples from their home, better air quality homes less likely to care. 
 
 ### Question 3
 
