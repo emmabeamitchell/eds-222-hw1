@@ -3,7 +3,13 @@ title: "EDS 222: Homework 1"
 date: "Assigned 09/26, due 10/14"
 author: "Emma Bea Mitchell"
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
+execute: 
+  warning: false
+  error: false
+  echo: true
+self-contained: true
+format: html 
 ---
 
 ```{r}
@@ -35,10 +41,6 @@ In answering the following questions, please consider the lecture content from c
 
 Load the data from each source and label it as `crowdsourced` and `govt` accordingly. For example:
 
-``` r
-crowdsourced <- readRDS(file.path("data", "airpol-PK-crowdsourced.RDS"))
-govt <- readRDS(file.path("data", "airpol-PK-govt.RDS"))
-```
 
 ```{r}
 crowdsourced <- readRDS(file.path("data", "airpol-PK-crowdsourced.RDS"))
@@ -54,8 +56,8 @@ There's an implicit assumption about file organization in the code above. What i
 1.  These dataframes have one row per pollution observation. How many pollution records are in each dataset?
 
 ```{r}
-nrow(crowdsourced)
-nrow(govt)
+print(nrow(crowdsourced))
+print(nrow(govt))
 ```
 
 **The crowdsourced dataframe has 5488 pollution observations. The govt dataframe has 1960 pollution observations**
@@ -93,52 +95,52 @@ The goal of pollution monitoring in Lahore is to measure the average pollution c
 
 2.  What are the *samples* in this setting? Please be precise.
 
-**the samples are the voluntary samples that were taken from homes in Lahore**
+**the samples are  the actual air quality measurements taken throughout the city. These are meant to represent the city collectively, because it is impossible to measure air quality in every single square inch of the city.**
 
 3.  These samples were not randomly collected from across locations in Lahore. Given the sampling approaches described above, discuss possible biases that may enter when we use these samples to construct estimates of population parameters.
 
-**People who have worse air quality will be more likely to get samples from their home, better air quality homes less likely to care. Government chose sites with better air quality to make the city air quality appear better**
+**The government has a bias when collecting their data. They want the city's air to seem cleaner than it is. Therefore they pick specific places with better air quality to sample from. This becomes very clear when looking at the plot later on. It is also possible that the locations of the volunteered data are biased (maybe the volunteers wanted to test their air quality because they lived in areas with worse air), although this bias is clearly not as strong as the governmental data collection's.**
 
 ### Question 3
 
 1.  For both the government data and the crowd-sourced data, report the sample mean, sample minimum, and sample maximum value of PM 2.5 (measured in $\mu g/m^3$).
 
     ```{r}
-    mean(crowdsourced$PM)
-    min(crowdsourced$PM)
-    max(crowdsourced$PM)
+print(mean(crowdsourced$PM))
+print(min(crowdsourced$PM))
+print(max(crowdsourced$PM))
 
-    mean(govt$PM)
-    min(govt$PM)
-    max(govt$PM)
+print(mean(govt$PM))
+print(min(govt$PM))
+print(max(govt$PM))
     ```
 
-    mean of crowdsourced PM 2.5 is 70.2008 $\mu g/m^3$
+mean of crowdsourced PM 2.5 is 70.2008 $\mu g/m^3$
 
-    minimum of crowdsourced PM 2.5 is 20 $\mu g/m^3$
+minimum of crowdsourced PM 2.5 is 20 $\mu g/m^3$
 
-    max of crowdsourced PM 2.5 is 120 $\mu g/m^3$
+max of crowdsourced PM 2.5 is 120 $\mu g/m^3$
 
-    mean of govt PM 2.5 is 39.64694 $\mu g/m^3$
+mean of govt PM 2.5 is 39.64694 $\mu g/m^3$
 
-    minimum of govt PM 2.5 is 15 $\mu g/m^3$
+minimum of govt PM 2.5 is 15 $\mu g/m^3$
 
-    maximum of govt PM 2.5 is 65 $\mu g/m^3$
+maximum of govt PM 2.5 is 65 $\mu g/m^3$
 
 2.  Discuss any key differences that you see between these two samples
 
-The PM for the crowd sourced data is consistently higher than the govt data in mean, min, and max values
+**The PM for the crowd sourced data is consistently higher than the govt data in mean, min, and max values**
 
 3.  Are the differences in mean pollution as expected, given what we know about the sampling strategies?
 
-    Yes it is expected, because the government chose spots specifically with better air quality
+**Yes it is expected, because the government chose spots specifically with better air quality. It makes sense that the mean pollution would be much lower than the crowd sourced data.**
 
 ### Question 4
 
 Use the location of the air pollution stations for both of the sampling strategies to generate a map showing locations of each observation. Color the two samples with different colors to highlight how each sample obtains measurements from different parts of the city.
 
 ```{r}
-ggplot(data = crowdsourced) +
+plot_area <- ggplot(data = crowdsourced) +
   geom_point(aes(x = longitude, y = latitude, color = "Crowd-sourced")) +
   geom_point(data = govt, aes(x = longitude, y = latitude, color = "Government")) +
   labs(
@@ -147,6 +149,8 @@ ggplot(data = crowdsourced) +
     title = "Crowd Sourced vs. Government Data Locations"
   ) +
   scale_color_manual("Monitor Type", values = c("Crowd-sourced" = "blue", "Government" = "hotpink"))
+
+print(plot_area)
 
 ```
 
@@ -158,7 +162,7 @@ ggplot(data = crowdsourced) +
 
 The local newspaper in Pakistan, *Dawn*, claims that the government is misreporting the air pollution levels in Lahore. Do the locations of monitors in question 4, relative to crowd-sourced monitors, suggest anything about a possible political bias?
 
-Yes it does suggest political bias because the government data is coming from a very limited area. The crowd sourced data has a much wider range in area.
+**Yes it does suggest political bias because the government data is coming from a very limited area. The crowd sourced data has a much wider range in area. It is clear that the government's data collection is not random.**
 
 ### Question 6
 
@@ -190,11 +194,12 @@ round_bound <- binded |>
 strata_bound <- round_bound |>
   slice_sample(n = 200, replace = FALSE, by = lat_round)
 
-ggplot(strata_bound) +
+strata_plot <- ggplot(strata_bound) +
   geom_bar(aes(x = lat_round)) +
   theme_minimal()
 
-mean(strata_bound$PM)
+print(strata_plot)
+print(mean(strata_bound$PM))
 ```
 
 mean is 66.947
@@ -203,12 +208,12 @@ mean is 66.947
 
 Compare estimated means of PM 2.5 for each sampling strategy to the NASA estimate of 89.2 $\mu g/m^3$. Which sample seems to match the satellite data best? What would you recommend the Prime Minister do? Does your proposed sampling strategy rely more on government or on crowd-sourced data? Why might that be the case?
 
-crowdsourced mean mean of crowdsourced PM 2.5 is 70.2008 $\mu g/m^3$
+The mean of crowdsourced PM 2.5 is 70.2008 $\mu g/m^3$
 
-govt mean 39.64694 $\mu g/m^3$
+The govt mean is 39.64694 $\mu g/m^3$
 
-stratified random sample 66.947 $\mu g/m^3$
+The stratified random sample mean is 66.131 $\mu g/m^3$
 
 NASA estimate mean 89.2 $\mu g/m^3$
 
-The highest mean is 89.2 $\mu g/m^3$ which is the NASA strategy. The closest to that is the crowdsourced data, although it is still almost 10 $\mu g/m^3$ lower. I would recommend the Prime Minister use non-biased ways to collect their data. Crowd sourced data is more reliable, but is still not completely unbiased. The government should no longer sample with the goal of finding lower PM concentrations, and instead look for the most accurate results.
+**The highest mean is 89.2 $\mu g/m^3$ which is the NASA strategy. The closest to that is the crowdsourced data, although it is still almost 10 $\mu g/m^3$ lower. I would recommend the Prime Minister use non-biased ways to collect their data. Crowd sourced data is more reliable, but is still not completely unbiased. After the crowdsourced data, the stratified sample is the next closest mean. The least closest is the government's data. I would recommend to the prime minister that the government should no longer sample with the goal of finding lower PM concentrations, and instead look for the most accurate results. If it is not possible for the government to collect non-bias results, the crowd sourced data should be used, as it is the closest to the NASA estimate.**
