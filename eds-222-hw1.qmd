@@ -182,6 +182,7 @@ rand_samp
 mean(rand_samp$PM)
 min(rand_samp$PM)
 max(rand_samp$PM)
+dim(rand_samp)
 ```
 
 The mean of the random sample is 62.59, which is less than the crowd sourced data, but much more than the government data. The random sampling is definitely closer as a whole to the true NASA estimate than the original government sample was.
