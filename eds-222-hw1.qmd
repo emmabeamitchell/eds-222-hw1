@@ -175,14 +175,23 @@ NASA's satellite data indicates that the average PM across Lahore is 89.2 $\mu g
 First, generate a *random sample* of size $n=1000$ air pollution records by (i) pooling observations across the government and the crowd-sourced data; and (ii) drawing observations at random from this pooled sample.
 
 ```{r}
+govt <- govt |>
+  mutate(source = "govt")
+crowdsourced <- crowdsourced |>
+  mutate(source = "crowdsourced")
 set.seed(4321)
 binded <- bind_rows(crowdsourced,govt)
 rand_samp <- sample_n(binded, 1000)
-rand_samp
-mean(rand_samp$PM)
-min(rand_samp$PM)
-max(rand_samp$PM)
-dim(rand_samp)
+print(rand_samp)
+print(mean(rand_samp$PM))
+print(min(rand_samp$PM))
+print(max(rand_samp$PM))
+print(dim(rand_samp))
+
+kableExtra::kable(rand_samp |>
+                    group_by(source) |>
+                    count())
+
 ```
 
 The mean of the random sample is 62.59, which is less than the crowd sourced data, but much more than the government data. The random sampling is definitely closer as a whole to the true NASA estimate than the original government sample was.
@@ -207,6 +216,7 @@ strata_plot <- ggplot(strata_bound) +
 
 print(strata_plot)
 print(mean(strata_bound$PM))
+print(dim(strata_bound))
 ```
 
 mean is 66.947
@@ -215,7 +225,10 @@ mean is 66.947
 
 Compare estimated means of PM 2.5 for each sampling strategy to the NASA estimate of 89.2 $\mu g/m^3$. Which sample seems to match the satellite data best? What would you recommend the Prime Minister do? Does your proposed sampling strategy rely more on government or on crowd-sourced data? Why might that be the case? 
 
-(compare only to random sample and stratified, not crowdsourced or govt individually)
+```{r}
+
+```
+
 
 The random sample mean is 62.59 $\mu g/m^3$ 
 
