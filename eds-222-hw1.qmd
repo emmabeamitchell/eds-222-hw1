@@ -3,7 +3,7 @@ title: "EDS 222: Homework 1"
 date: "Assigned 09/26, due 10/14"
 author: "Emma Bea Mitchell"
 editor_options: 
-  chunk_output_type: inline
+  chunk_output_type: console
 execute: 
   warning: false
   error: false
@@ -79,7 +79,7 @@ print(n_distinct(unique_govt$group_id))
 
 ```
 
-**There are 14 unique latitude and longitude locations in crowdsourced dataset. There are 4 unique latitude and longitude locations in govt dataset**
+**There are 14 unique latitude and longitude locations in crowdsourced dataset. There are 5 unique latitude and longitude locations in govt dataset**
 
 ::: callout-tip
 `group_by(longitude,latitude)` and `cur_group_id()` in `dplyr` will help in creating a unique identifier for each (longitude, latitude) pair.
@@ -91,15 +91,15 @@ The goal of pollution monitoring in Lahore is to measure the average pollution c
 
 1.  What is the *population* in this setting? Please be precise
 
-**in the crowdsourced dataset the population is Lahore's air quality in the entire city**
+**in the crowdsourced dataset the population is Lahore's air quality in the entire city for the entire timeframe from November 2018 to November 2019**
 
 2.  What are the *samples* in this setting? Please be precise.
 
-**the samples are  the actual air quality measurements taken throughout the city. These are meant to represent the city collectively, because it is impossible to measure air quality in every single square inch of the city.**
+**The samples are the actual air quality monitors throughout the city from November 2018 to November 2019. These are meant to represent the city collectively, because it is impossible to measure air quality in every single square inch of the city. One sample is the crowd sourced data and another is the government data. Different methodologies make these separate samples** 
 
 3.  These samples were not randomly collected from across locations in Lahore. Given the sampling approaches described above, discuss possible biases that may enter when we use these samples to construct estimates of population parameters.
 
-**The government has a bias when collecting their data. They want the city's air to seem cleaner than it is. Therefore they pick specific places with better air quality to sample from. This becomes very clear when looking at the plot later on. It is also possible that the locations of the volunteered data are biased (maybe the volunteers wanted to test their air quality because they lived in areas with worse air), although this bias is clearly not as strong as the governmental data collection's.**
+**The government has a bias when collecting their data. They want the city's air to seem cleaner than it is. Therefore they pick specific places with better air quality to sample from. This becomes very clear when looking at the plot later on. It is also possible that the locations of the volunteered data are biased (maybe the volunteers wanted to test their air quality because they lived in areas with worse air), although this bias is clearly not as strong as the governmental data collection's.** 
 
 ### Question 3
 
@@ -133,7 +133,7 @@ maximum of govt PM 2.5 is 65 $\mu g/m^3$
 
 3.  Are the differences in mean pollution as expected, given what we know about the sampling strategies?
 
-**Yes it is expected, because the government chose spots specifically with better air quality. It makes sense that the mean pollution would be much lower than the crowd sourced data.**
+**Yes it is expected, because the government chose spots specifically with better air quality. It makes sense that the mean pollution would be much lower than the crowd sourced data. Crowd sourced data also has some bias, and it is possible that the volunteers' had bias when collecting their samples. For example, volunteers could be collecting samples in areas where air quality was worse because people in those areas would be more incentivized to get samples. That could mean that their sample data was overall higher**
 
 ### Question 4
 
@@ -162,7 +162,7 @@ print(plot_area)
 
 The local newspaper in Pakistan, *Dawn*, claims that the government is misreporting the air pollution levels in Lahore. Do the locations of monitors in question 4, relative to crowd-sourced monitors, suggest anything about a possible political bias?
 
-**Yes it does suggest political bias because the government data is coming from a very limited area. The crowd sourced data has a much wider range in area. It is clear that the government's data collection is not random.**
+**Yes it does suggest political bias because the government data is coming from a very limited area. The crowd sourced data has a much wider range in area. It is clear that the government's data collection is not random. Crowd sourced data is also slightly biased because it still doesn't have data from every part of the city** 
 
 ### Question 6
 
@@ -175,10 +175,16 @@ NASA's satellite data indicates that the average PM across Lahore is 89.2 $\mu g
 First, generate a *random sample* of size $n=1000$ air pollution records by (i) pooling observations across the government and the crowd-sourced data; and (ii) drawing observations at random from this pooled sample.
 
 ```{r}
+set.seed(4321)
 binded <- bind_rows(crowdsourced,govt)
 rand_samp <- sample_n(binded, 1000)
-
+rand_samp
+mean(rand_samp$PM)
+min(rand_samp$PM)
+max(rand_samp$PM)
 ```
+
+The mean of the random sample is 62.59, which is less than the crowd sourced data, but much more than the government data. The random sampling is definitely closer as a whole to the true NASA estimate than the original government sample was.
 
 ::: callout-tip
 `bind_rows()` may be helpful.
@@ -206,14 +212,14 @@ mean is 66.947
 
 #### Question 6.2
 
-Compare estimated means of PM 2.5 for each sampling strategy to the NASA estimate of 89.2 $\mu g/m^3$. Which sample seems to match the satellite data best? What would you recommend the Prime Minister do? Does your proposed sampling strategy rely more on government or on crowd-sourced data? Why might that be the case?
+Compare estimated means of PM 2.5 for each sampling strategy to the NASA estimate of 89.2 $\mu g/m^3$. Which sample seems to match the satellite data best? What would you recommend the Prime Minister do? Does your proposed sampling strategy rely more on government or on crowd-sourced data? Why might that be the case? 
 
-The mean of crowdsourced PM 2.5 is 70.2008 $\mu g/m^3$
+(compare only to random sample and stratified, not crowdsourced or govt individually)
 
-The govt mean is 39.64694 $\mu g/m^3$
+The random sample mean is 62.59 $\mu g/m^3$ 
 
 The stratified random sample mean is 66.131 $\mu g/m^3$
 
 NASA estimate mean 89.2 $\mu g/m^3$
 
-**The highest mean is 89.2 $\mu g/m^3$ which is the NASA strategy. The closest to that is the crowdsourced data, although it is still almost 10 $\mu g/m^3$ lower. I would recommend the Prime Minister use non-biased ways to collect their data. Crowd sourced data is more reliable, but is still not completely unbiased. After the crowdsourced data, the stratified sample is the next closest mean. The least closest is the government's data. I would recommend to the prime minister that the government should no longer sample with the goal of finding lower PM concentrations, and instead look for the most accurate results. If it is not possible for the government to collect non-bias results, the crowd sourced data should be used, as it is the closest to the NASA estimate.**
+**The highest mean is 89.2 $\mu g/m^3$ which is the NASA strategy. The closest to that is the stratified random sample, although it is still over 23 $\mu g/m^3$ lower. I would recommend the Prime Minister use non-biased ways to collect their data. Crowd sourced data is more reliable, but is still not completely unbiased. The closest to the NASA estimate is the stratified random sample, with the least closest being the random sample, although it was only about 3.5 below. I would recommend to the prime minister that the government should no longer sample with the goal of finding lower PM concentrations, and instead look for the most accurate results. If it is not possible for the government to collect non-bias results, the crowd sourced data should be used, as it is the closest to the NASA estimate.**
